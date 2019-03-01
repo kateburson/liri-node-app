@@ -2,12 +2,13 @@
 require("dotenv").config();
 
 const axios = require('axios');
+const moment = require('moment');
 
 var  keys = require("./keys.js");
 var Spotify = require('node-spotify-api');
 var spotify = new Spotify(keys.spotify);
 const command = process.argv[2];
-const artist = process.argv[3];
+const artist = process.argv.slice(3).toString().replace(',', '');
 const song = process.argv.slice(3);
 const movie = process.argv.slice(3).toString().split(' ').join('+');
 
@@ -15,7 +16,18 @@ const movie = process.argv.slice(3).toString().split(' ').join('+');
 if(command === 'concert-this') {
     axios.get('https://rest.bandsintown.com/artists/' + artist + '/events?app_id=codingbootcamp')
     .then(function (response) {
-        console.log(response);
+
+        var venue = response.data[0].venue.name;
+        console.log('Venue:', venue);
+
+        var location = response.data[0].venue.city;
+        console.log('Location:', location);
+
+        var datetime = response.data[0].datetime.split('T');      
+        var a = moment(datetime[0]);
+        var date = a.format('MM/DD/YYYY');
+        console.log('Date:', date);
+
     })
     .catch(function (error) {
         console.error(error);
@@ -26,7 +38,6 @@ if(command === 'spotify-this-song') {
     .search({
         type: 'track', 
         query: song,
-        limit: 2,
     })
     .then(function(response) {
         var artist = response.tracks.items[0].artists[0].name; 
@@ -54,7 +65,7 @@ if(command === 'spotify-this-song') {
             var rottenTomatoes = response.data.Ratings[1].Value;
             console.log('Rotten Tomatoes:', rottenTomatoes);
             var country= response.data.Country;
-            console.log('Country', country);
+            console.log('Country:', country);
             var language = response.data.Language;
             console.log('Language:', language);
             var plot = response.data.Plot;
