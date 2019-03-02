@@ -1,5 +1,6 @@
-
+require('colors');
 require("dotenv").config();
+var fs = require('fs');
 
 const axios = require('axios');
 const moment = require('moment');
@@ -8,72 +9,130 @@ var  keys = require("./keys.js");
 var Spotify = require('node-spotify-api');
 var spotify = new Spotify(keys.spotify);
 const command = process.argv[2];
-const artist = process.argv.slice(3).toString().replace(',', '');
-const song = process.argv.slice(3);
-const movie = process.argv.slice(3).toString().split(' ').join('+');
+var artist = process.argv.slice(3).join('');
+var song = process.argv.slice(3).join(' ');
+var movie = process.argv.slice(3).toString().split(' ').join('+');
+var divider = "\n------------------------------------------------------------\n\n";
 
-
-if(command === 'concert-this') {
-    axios.get('https://rest.bandsintown.com/artists/' + artist + '/events?app_id=codingbootcamp')
+function concertThis(artist) {
+    var URL = 'https://rest.bandsintown.com/artists/' + artist + '/events?app_id=codingbootcamp';
+    console.log(URL);
+    axios.get(URL)
     .then(function (response) {
 
+        var info = []; 
+
         var venue = response.data[0].venue.name;
-        console.log('Venue:', venue);
+        console.log(venue ? 'Venue: '.magenta + venue : 'error');
 
         var location = response.data[0].venue.city;
-        console.log('Location:', location);
+        console.log(location ? 'Location: '.magenta + location : 'error');
 
         var datetime = response.data[0].datetime.split('T');      
         var a = moment(datetime[0]);
         var date = a.format('MM/DD/YYYY');
-        console.log('Date:', date);
+        console.log(date ? 'Date: '.magenta + date : 'error');
+        info.push(venue, location, date);
+        
+        fs.appendFile('log.txt', info.join('\n') + divider, function(err){
+            if(err) {
+                console.error(err);
+            }
+        })
 
     })
     .catch(function (error) {
         console.error(error);
     });
-} else 
-if(command === 'spotify-this-song') {
+};
+
+function spotifyThisSong(song) {
     spotify
     .search({
         type: 'track', 
         query: song,
     })
     .then(function(response) {
-        var artist = response.tracks.items[0].artists[0].name; 
-        console.log('Artist:', artist);
-        var song = response.tracks.items[0].name;
-        console.log('Song:', song);
-        var preview = response.tracks.items[0].preview_url;
-        console.log('Preview:', preview);
-        var album = response.tracks.items[0].album.name;
-        console.log('Album:', album);
+            var info = []; 
+
+            var artist = response.tracks.items[0].artists[0].name; 
+            console.log('Artist:'.green, artist);
+            var song = response.tracks.items[0].name;
+            console.log('Song:'.green, song);
+            var preview = response.tracks.items[0].preview_url;
+            console.log('Preview:'.green, preview);
+            var album = response.tracks.items[0].album.name;
+            console.log('Album:'.green, album);
+
+            info.push(artist, song, preview, album);
+
+            fs.appendFile('log.txt', info.join('\n') + divider, function(err){
+                if(err) {
+                    console.error(err);
+                }
+            })
     })
     .catch(function(err) {
         console.error('Error occurred: ' + err); 
     });
-} else if(command === 'movie-this') {
-    // axios.get('http://www.omdbapi.com/?apikey=1b061057&'+ movie)
+};
+
+function movieThis(movie) {
     axios.get('http://www.omdbapi.com/?t=' + movie + '&apikey=1b061057&')
-        .then(function (response) {
-            var title = response.data.Title;
-            console.log('Title:', title);
-            var year = response.data.Year;
-            console.log('Year:', year);
-            var rating = response.data.Rated;
-            console.log('Rating:', rating);
-            var rottenTomatoes = response.data.Ratings[1].Value;
-            console.log('Rotten Tomatoes:', rottenTomatoes);
-            var country= response.data.Country;
-            console.log('Country:', country);
-            var language = response.data.Language;
-            console.log('Language:', language);
-            var plot = response.data.Plot;
-            console.log('Plot:', plot);
-            var actors = response.data.Actors;
-            console.log('Actors:', actors);
+    .then(function (response) {
+
+        var info = [];
+
+        var title = response.data.Title;
+        console.log('Title:'.blue, title);
+        var year = response.data.Year;
+        console.log('Year:'.blue, year);
+        var rating = response.data.Rated;
+        console.log('Rating:'.blue, rating);
+        var rottenTomatoes = response.data.Ratings[1].Value;
+        console.log('Rotten Tomatoes:'.blue, rottenTomatoes);
+        var country= response.data.Country;
+        console.log('Country:'.blue, country);
+        var language = response.data.Language;
+        console.log('Language:'.blue, language);
+        var plot = response.data.Plot;
+        console.log('Plot:'.blue, plot);
+        var actors = response.data.Actors;
+        console.log('Actors:'.blue, actors);
+
+        info.push(title, year, rating, rottenTomatoes, country, language, plot, actors);
+
+        fs.appendFile('log.txt', info.join('\n') + divider, function(err){
+            if(err) {
+                console.error(err);
+            }
         })
-        .catch(function (error) {
-            console.error(error);
-        });
+
+    })
+    .catch(function (error) {
+        console.error(error);
+    });
+}
+
+
+if(command === 'concert-this') {
+    if(artist) {
+        concertThis(artist);
+    } else {
+        console.log('Enter a band name');
+    }
+} else if(command === 'spotify-this-song') {
+    if(song.length){
+        spotifyThisSong(song);
+    } else {
+        song = 'the sign';
+        spotifyThisSong(song);
+    }
+} else if(command === 'movie-this') {
+    if(movie){
+        movieThis(movie);
+    } else {
+        movie = 'mr+nobody'
+        movieThis(movie);
+    }
 }
