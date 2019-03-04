@@ -135,15 +135,15 @@ if(command === 'concert-this') {
         movieThis(movie);
     }
 } else if(command === 'do-what-it-says') {
-    var doThis = fs.readFile('random.txt', 'utf-8', function(err){
+   var data = fs.readFile('random.txt', 'utf-8', function(data, err){
         if(err){
             console.error(err);
         }
-    })
-    command = doThis.split(',')[0];
-    song = doThis.split(',')[1];
-
-
+    console.log(data);
+    //     console.log(data);
+    // var command = data;
+    // console.log(command);
+})
 
 
 }
