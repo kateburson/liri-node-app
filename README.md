@@ -18,11 +18,8 @@ LIRI responds to four commands: 'concert-this', 'spotify-this-song', 'movie-this
 
 # Images
 
-![concert-this](/images/screenShot1.png)
-Format: ![Alt Text](url)
+![alt text](screenshots/screenShot1.png "concert-this command")
 
-![spotify-this-song](/images/screenShot2.png)
-Format: ![Alt Text](url)
+![alt text](screenshots/screenShot2.png "spotify-this-song command")
 
-![movie-this](/images/screenSho3.png)
-Format: ![Alt Text](url)
+![alt text](screenshots/screenShot3.png "movie-this command")
