@@ -114,7 +114,6 @@ function movieThis(movie) {
     });
 }
 
-
 if(command === 'concert-this') {
     if(artist) {
         concertThis(artist);
@@ -135,4 +134,16 @@ if(command === 'concert-this') {
         movie = 'mr+nobody'
         movieThis(movie);
     }
+} else if(command === 'do-what-it-says') {
+    var doThis = fs.readFile('random.txt', 'utf-8', function(err){
+        if(err){
+            console.error(err);
+        }
+    })
+    command = doThis.split(',')[0];
+    song = doThis.split(',')[1];
+
+
+
+
 }
