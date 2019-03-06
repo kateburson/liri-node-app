@@ -16,7 +16,7 @@ LIRI responds to four commands: 'concert-this', 'spotify-this-song', 'movie-this
 * Bands In Town API
 * OMDB API
 
-# Images
+## Images
 
 ![alt text](screenShot1.png "concert-this command")
 

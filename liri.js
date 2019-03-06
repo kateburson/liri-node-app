@@ -8,7 +8,7 @@ const moment = require('moment');
 var  keys = require("./keys.js");
 var Spotify = require('node-spotify-api');
 var spotify = new Spotify(keys.spotify);
-const command = process.argv[2];
+var command = process.argv[2];
 var artist = process.argv.slice(3).join('');
 var song = process.argv.slice(3).join(' ');
 var movie = process.argv.slice(3).toString().split(' ').join('+');
@@ -135,14 +135,24 @@ if(command === 'concert-this') {
         movieThis(movie);
     }
 } else if(command === 'do-what-it-says') {
-   var data = fs.readFile('random.txt', 'utf-8', function(data, err){
-        if(err){
-            console.error(err);
+    fs.readFile('random.txt', 'utf-8', function(error, data) {
+        if(error) {
+            console.error(error);
         }
     console.log(data);
-    //     console.log(data);
-    // var command = data;
-    // console.log(command);
+    var it = data.split(',');
+    console.log(it);
+    command = it[0];
+    console.log(command);
+    song = it[1];
+    if (command === 'spotify-this-song') {
+        spotifyThisSong(song);
+    } else if (command === 'movie-this') {
+        movieThis();
+    } else if (command === 'concert-this') {
+        concertThis();
+    }
+    
 })
 
 
